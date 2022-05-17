@@ -259,7 +259,33 @@ app.post('/verify', async(req,res)=>{
 
 //getting a full user
 app.get("/user/:username",async(req,res)=>{
-    
+    const user = req.session.username
+    const email = req.session.email
+    const userlink = req.params.username
+    if (user && email) {
+        fetch(website+"/getafulluser/"+userlink, {
+            method:'GET',
+            headers: {"Content-type": "application/json; charset=UTF-8"}
+        }).then(response.json()).then((json)=>{
+            const data= json;
+            if (data.access==true) {
+                if (data.userAvailable==true) {
+                    if (data.assAvailable) {
+                        res.render('userfind',{assignmets:true, user, userdata:data.userdata, userAss : data.assignmets})
+                    } else {
+                        res.render('userfind',{assignmets:false, user, userdata:data.userdata})
+                        
+                    }
+                } else {
+                    res.redirect('/login')
+                }
+            } else {
+                res.json('/lost')
+            }
+        })
+    }else{
+        res.redirect('login');
+    }
 })
 
 
