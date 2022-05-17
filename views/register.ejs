@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <center><h1>Book Overflow</h1></center><br>
+
+    <form action="/register" method="post">
+        <p><%= msg  %></p>
+        <input type="text" name="Username" id="" placeholder="username" required> <br>
+        <input type="password" name="password" id="" placeholder="password" required> <br>
+        <input type="email" name="email" id="" placeholder="email" required> <br>
+        <input type="text" name="school" id="" placeholder="School" required> <br>
+        <!-- <input type="file" name="book"> -->
+        <input type="submit">
+    </form>
+
+    <a href="/login"> click to login</a>
+</body>
+</html>
