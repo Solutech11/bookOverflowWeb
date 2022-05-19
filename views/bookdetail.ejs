@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= itemdata.name %>||Book </title>
+</head>
+<body>
+    <center><h1>Book Overflow</h1></center>
+    <center><h2><%= itemdata.name %></h2></center>
+    <center><h3><%= itemdata.topic %></h3></center>
+    <center><h4><%= itemdata.subject %> || <% if ( username =="Anonymous") { %>
+     <p>Anonymous</p>
+    <% }else{ %> <a href="/user/<%= username %>"><%= username %> </a> <% } %>  </h4></center>
+<a href="/">Home</a>
+    <br>
+    <pre><%= itemdata.bookDescription %> </pre>
+
+    <br>
+    <br>
+    <center>
+        <a href="<%= website %><%= itemdata.bookLocation %>"> Download this book here</a>
+    </center>
+</body>
+</html>

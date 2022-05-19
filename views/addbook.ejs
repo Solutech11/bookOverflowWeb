@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>add Assignment</title>
+</head>
+<body>
+    <form action="<%= website %>/addbook/samoaJoe" method="post" enctype="multipart/form-data">
+        <input type="text" name="name" id="" placeholder="Assignment name" required><br>
+        <input type="text" name="subject" id="" placeholder="Subject" required> <br>
+        <input type="text" name="topic" placeholder="Topic" required><br>
+        <input type="text" name="grade" id="" placeholder="grade" required><br>
+        <textarea name="bookDescription" id="" cols="30" rows="10" placeholder="Description" required></textarea><br>
+        <input type="file" name="book" id="" placeholder="upload book" required><br>
+        <input type="hidden" name="userid" value="<%= user %>" >
+        <button type="submit" onsubmit="upload()">Add book</button>
+    </form>
+</body>
+
+<script>
+    function upload() {
+        window.location.pathname='/'        
+    }
+</script>
+
+</html>

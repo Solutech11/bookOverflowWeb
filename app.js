@@ -9,6 +9,8 @@ const _ = require('lodash');
 const cors = require("cors")
 app.use(cors())
 
+//open
+const open = require('open');
 
 //node fetch
 const fetch = require('node-fetch')
@@ -18,16 +20,17 @@ const morgan = require('morgan')
 app.use(morgan('dev'))
 
 
+//accepting data
+const bodyparser= require('body-parser');
+app.use(bodyparser.urlencoded({limit: '20mb', extended: true}))
+app.use(bodyparser.json({limit: '20mb', extended: true}))
+
 
 //accepting pdf
 const fileupload = require('express-fileupload');
 app.use(fileupload({createParentPath:true}))
 
 
-//accepting data
-const bodyparser= require('body-parser');
-app.use(bodyparser.urlencoded({extended:true}))
-app.use(bodyparser.json())
 
 
 //static file
@@ -39,6 +42,8 @@ app.set('view engine','ejs' );
 //session
 const session = require('express-session');
 const { response } = require('express');
+// const { response } = require('express');
+// const { json } = require('express/lib/response');
 app.use(session({secret:'samoaJoe', saveUninitialized:true, resave:true}))
 
 
@@ -60,9 +65,23 @@ const website ='http://localhost:5000'
 app.get('/', async(req,res)=>{
     const sess= req.session;
     if (sess.username && sess.email) {
-        res.render('home')
+        await fetch(website+'/getallbook/'+apikey,{
+            method:'GET',
+            headers:{"Content-type": "application/json; charset=UTF-8"}
+        }).then(response=>response.json()).then((json)=>{
+            const data = json;
+            if (data.access==true) {
+                if (data.item== true) {
+                    res.render('home', {user:sess.username, item:true, books:data.data})
+                } else {
+                    res.render('home',{user:sess.username, item:false})
+                }
+            } else {
+                res.redirect('/lost')
+            }
+        })
     }else{
-        res.redirect("/register", {msg:""})
+        res.redirect("/register")
     }
 })
 
@@ -135,7 +154,7 @@ app.post('/login', async(req,res)=>{
     const sess= req.session;
     const inputes = JSON.stringify(req.body);
 
-    fetch(website+'/login/'+apikey, {
+    await fetch(website+'/login/'+apikey, {
         method:'POST',
         body:inputes,
         headers:{"Content-type": "application/json; charset=UTF-8"}
@@ -165,6 +184,23 @@ app.post('/login', async(req,res)=>{
 })
 
 
+//logout
+app.get('/logout',(req,res)=>{
+    const sess= req.session
+    if (sess.username || sess.email) {
+        sess.destroy((err)=>{
+            if (err) {
+                console.log(err);
+            } else {
+                res.redirect('/')
+            }
+        })
+    }else{
+        res.redirect('/')
+    }
+})
+
+
 //get verify
 app.get('/verify', async(req,res)=>{
     const user = req.session.username
@@ -172,7 +208,7 @@ app.get('/verify', async(req,res)=>{
 
     //user nd email
     if (user && email){
-        fetch(website+'/verify/'+apikey+'/'+user, {
+        await fetch(website+'/verify/'+apikey+'/'+user, {
             method: 'GET',
             headers:{"Content-type": "application/json; charset=UTF-8"}
         }).then(response=>response.json()).then((json)=>{
@@ -216,7 +252,7 @@ app.post('/verify', async(req,res)=>{
     const sess = req.session
     const otp = JSON.stringify(req.body);
     if (user && email) {
-        fetch(website+"/verify/"+apikey+"/"+user,{
+        await fetch(website+"/verify/"+apikey+"/"+user,{
             method:'POST',
             body:otp,
             headers:{"Content-type": "application/json; charset=UTF-8"}
@@ -253,40 +289,212 @@ app.post('/verify', async(req,res)=>{
             }
 
         })
+    }else{
+        res.redirect('/')
     }
 })
 
 
 //getting a full user
-app.get("/user/:username",async(req,res)=>{
+app.get("/user/:user",async(req,res)=>{
     const user = req.session.username
     const email = req.session.email
-    const userlink = req.params.username
+    const userlink = req.params.user
     if (user && email) {
-        fetch(website+"/getafulluser/"+userlink, {
+        await fetch(website+"/getafulluser/"+userlink, {
             method:'GET',
             headers: {"Content-type": "application/json; charset=UTF-8"}
-        }).then(response.json()).then((json)=>{
+        }).then(response=>response.json()).then((json)=>{
             const data= json;
+            // console.log(data);
             if (data.access==true) {
                 if (data.userAvailable==true) {
-                    if (data.assAvailable) {
-                        res.render('userfind',{assignmets:true, user, userdata:data.userdata, userAss : data.assignmets})
+                    if (data.assAvailable==true) {
+                        res.render('userfind',{assignmets:true, user, userdata:data.userData, userAss : data.assignments, website, msg:''})
                     } else {
-                        res.render('userfind',{assignmets:false, user, userdata:data.userdata})
+                        res.render('userfind',{assignmets:false, user, userdata:data.userData, website, msg:''})
                         
                     }
                 } else {
-                    res.redirect('/login')
+                    res.redirect('/lost')
                 }
             } else {
-                res.json('/lost')
+                res.redirect('/lost')
             }
         })
     }else{
-        res.redirect('login');
+        res.redirect('/');
     }
 })
+
+//getting full user by id
+app.get("/userid/:id",async(req,res)=>{
+    const user = req.session.username
+    const email = req.session.email
+    const userlink = req.params.id
+    // console.log(userlink);
+    if(userlink.length==24){
+        if (user && email) {
+            await fetch(website+"/getafulluserbyId/"+userlink, {
+                method:'GET',
+                headers: {"Content-type": "application/json; charset=UTF-8"}
+            }).then(response=>response.json()).then((json)=>{
+                const data= json;
+                // console.log(data);
+                if (data.access==true) {
+                    if (data.userAvailable==true) {
+                        if (data.assAvailable==true) {
+                            res.render('userfind',{assignmets:true, user, userdata:data.userData, userAss : data.assignments, website,msg:''})
+                        } else {
+                            res.render('userfind',{assignmets:false, user, userdata:data.userData, website,msg:''})
+                            
+                        }
+                    } else {
+                        res.redirect('/lost')
+                    }
+                } else {
+                    res.redirect('/lost')
+                }
+            })
+        }else{
+            res.redirect('/');
+        }
+    }else{
+        res.redirect('/lost')
+    }
+    
+})
+
+
+//get single item
+app.get('/item/:id', async(req,res)=>{
+    const user = req.session.username
+    const email = req.session.email
+    const idurl= req.params.id;
+
+    if (idurl.length==24) {
+        if (user && email) {
+            await fetch(website+'/item/'+idurl,{
+                method:'GET',
+                headers:{"Content-type": "application/json; charset=UTF-8"}
+            }).then(response=>response.json()).then((json)=>{
+                const data = json;
+                // console.log(data);
+                if (data.access==true) {
+                    if (data.item==true) {
+                        if (data.user==true) {
+                            res.render('bookdetail',{username:data.userdata.Username,itemdata:data.itemdata, website})
+                            
+                        } else {
+                            res.render('bookdetail',{username:'Anonymous',itemdata:data.itemdata, website})
+                        }
+                        // res.render('bookdetail',{data})
+                    }else{
+                        res.redirect('/lost')
+                    }
+                } else {
+                    res.redirect('/lost')
+                }
+            })
+        } else {
+            res.redirect('/')
+        }
+    } else {
+        res.redirect('/lost')
+    }
+})
+
+// res.json({access:true, item:true,uservalid:true,deleted:true})
+//delete item
+app.get('/delete/:itemid/:userid', async(req,res)=>{
+    const user = req.session.username;
+    const email = req.session.email;
+    const itemId = req.params.itemid;
+    const userid = req.params.userid;
+
+    if(itemId.length==24 && userid.length==24){
+        if (user && email) {
+
+            await fetch(website+'/delete/'+apikey+'/'+itemId+'/'+userid,{
+                method:'GET',
+                headers:{"Content-type": "application/json; charset=UTF-8"}
+            }).then(response=>response.json()).then((json)=>{
+                const data= json;
+                if (data.access==true) {
+                    if(data.item==true){
+                        if (data.uservalid==true) {
+                            if (data.deleted==true) {
+                                res.render('deleted')
+                            }else{
+                                res.write('<script>Alert("unable to delete")</script>')
+                            }
+                        }else{
+                            res.redirect('/lost')
+                        }
+                    }else{
+                        res.redirect('/lost')
+                    }
+                } else {
+                    res.redirect('/lost')
+                }
+            })
+
+        } else {
+            res.redirect('/register');
+        }
+    }else{
+        res.redirect('/lost')
+    }
+})
+
+
+//addbook. get
+app.get('/addbook', (req,res)=>{
+    const user = req.session.username
+    const email = req.session.email
+    if (user && email) {
+        res.render('addbook', {msg:'', user,website})
+    } else {
+        res.redirect('/')
+    }
+
+})
+
+
+//search
+app.post('/search',async(req,res)=>{
+    const search = req.body.search;
+    const user = req.session.username
+    const email = req.session.email
+
+    if (user && email) {
+        await fetch(website+"/getallbook/"+apikey,{
+            method:'GET',
+            headers:{"Content-type": "application/json; charset=UTF-8"}
+        }).then(response=>response.json()).then((json)=>{
+            const data = json;
+            console.log(data);
+            if (data.access==true) {
+                if (data.item== true) {
+                    const book = data.data.filter((data)=>{
+                        return (data.name).includes(search)
+                    })
+                    res.render('search',{item:data.item, user, books:book})
+                } else {
+                    res.render('search',{item:data.item, user})
+                }
+            }else{
+                res.redirect('/lost')
+            }
+        })
+    }else{
+        res.redirect('/lost')
+    }
+})
+
+//app.get
+// app.get(/)
+
 
 
 

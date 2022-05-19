@@ -7,6 +7,35 @@
     <title> <%= user %> page</title>
 </head>
 <body>
-    
+    <center><h1>Book overflow</h1></center>
+    <center><h2><%= userdata.Username %></h2></center>
+    <center><h3><%= userdata.email %> . <%= userdata.school %> . <strong><%= userdata.Verification %></strong></h3></center>
+    <a href="/">home</a>
+    <br>
+    <h3><%= msg %> </h3>
+    <br>
+    <br>
+    <% if (assignmets==true) {%>
+        <% for (let i = userAss.length-1; i >= 0; i--) { %>
+            <div onclick="move('/item/<%= userAss[i]._id %>')">
+                <h2><%= userAss[i].name %></h2>
+                <br>
+                <h3><u><%= userAss[i].subject %></u>---- <%= userAss[i].topic %>----- class: <%= userAss[i].grade %></h3>
+                <pre><%= (userAss[i].bookDescription).substring(0,35)+"..." %></pre>
+                <a href="<%= website %><%= userAss[i].bookLocation %>" download>download assignment</a>
+                <% if (userdata.Username==user) { %>
+                    <a href="/delete/<%= userAss[i]._id %>/<%= userdata._id %>">delete</a>
+                <% } %>
+            </div>            
+        <% } %> 
+    <% } else {%>
+        <center><h1 style="color: red;"><strong>No book!!!</strong></h1></center>
+    <% } %>
+
 </body>
+<script>
+    function move(pth) {
+        window.location.pathname=pth
+    }
+</script>
 </html>
