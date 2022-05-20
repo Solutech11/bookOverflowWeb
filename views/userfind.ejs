@@ -1,41 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> <%= user %> page</title>
-</head>
-<body>
-    <center><h1>Book overflow</h1></center>
-    <center><h2><%= userdata.Username %></h2></center>
-    <center><h3><%= userdata.email %> . <%= userdata.school %> . <strong><%= userdata.Verification %></strong></h3></center>
-    <a href="/">home</a>
-    <br>
-    <h3><%= msg %> </h3>
-    <br>
-    <br>
-    <% if (assignmets==true) {%>
-        <% for (let i = userAss.length-1; i >= 0; i--) { %>
-            <div onclick="move('/item/<%= userAss[i]._id %>')">
-                <h2><%= userAss[i].name %></h2>
-                <br>
-                <h3><u><%= userAss[i].subject %></u>---- <%= userAss[i].topic %>----- class: <%= userAss[i].grade %></h3>
-                <pre><%= (userAss[i].bookDescription).substring(0,35)+"..." %></pre>
-                <a href="<%= website %><%= userAss[i].bookLocation %>" download>download assignment</a>
-                <% if (userdata.Username==user) { %>
-                    <a href="/delete/<%= userAss[i]._id %>/<%= userdata._id %>">delete</a>
-                <% } %>
-            </div>            
-        <% } %> 
-    <% } else {%>
-        <center><h1 style="color: red;"><strong>No book!!!</strong></h1></center>
-    <% } %>
+    <head>
+        <meta charset="utf-8">
+        <title><%= user %> || Book Overflow</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        
+        <!-- Favicon -->
+        
 
-</body>
-<script>
-    function move(pth) {
-        window.location.pathname=pth
-    }
-</script>
+        <!-- Google Fonts -->
+        <link href="/mains/https://fonts.googleapis.com/css2?family=Open+Sans:300;400;600;700;800&display=swap" rel="stylesheet">
+
+        <!-- Font Awesome -->
+        <link href="/mains/https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="/mains/css/style.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="wrapper">
+            <div class="sidebar">
+                <div class="sidebar-text d-flex flex-column h-100 justify-content-center text-center">
+                    <img class="mx-auto d-block w-75 bg-primary img-fluid rounded-circle mb-4 p-3" src="/mains/img/profile.png" alt="Image">
+                    <h1 class="font-weight-bold"><%= userdata.Username %></h1>
+                    <p class="mb-4">
+                        <%= userdata.email %> . <%= userdata.school %> . <strong><%= userdata.Verification %></strong>                    </p>
+                </div>
+                <div class="sidebar-icon d-flex flex-column h-100 justify-content-center text-right">
+                    <i class="fas fa-2x fa-angle-double-right text-primary"></i>
+                </div>
+            </div>
+            <div class="content">
+    
+                
+                <!-- Blog List Start -->
+                <div class="container bg-white pt-5">
+                    <% if (assignmets==true) { %>
+                        <% for (let i = userAss.length-1; i >= 0; i--) { %>
+                            <div class="row blog-item px-3 pb-5" onclick="move('/item/<%= userAss[i]._id %>')">
+                                <div class="col-md-5">
+                                    <img class="img-fluid mb-4 mb-md-0" src="/mains/img/blog-1.jpg" alt="Image">
+                                </div>
+                                <div class="col-md-7">
+                                    <h3 class="mt-md-4 px-md-3 mb-2 py-2 bg-white font-weight-bold"><%= userAss[i].name %></h3>
+                                    <div class="d-flex mb-3">
+                                        <small class="mr-2 text-muted"><i class="fa fa-calendar-alt"></i> <%= userAss[i].subject %></small>
+                                        <small class="mr-2 text-muted"><i class="fa fa-folder"></i> <%= userAss[i].topic %></small>
+                                        <small class="mr-2 text-muted"><i class="fa fa-comments"></i> <%= userAss[i].grade %></small>
+                                        <small class="mr-2 text-muted"><i class="fa fa-comments"></i> <a href="<%= website %><%= userAss[i].bookLocation %>" download>download assignment</a></small>
+                                        
+                                        
+                                    </div>
+                                    <p>
+                                        <%= (userAss[i].bookDescription).substring(0,35)+"..." %>
+                                    </p> <% if (userdata.Username==user) { %>
+                                        <a class="btn btn-link p-0" href="/delete/<%= userAss[i]._id %>/<%= userdata._id %>"><Strong>Delete</Strong></a>
+                                    <% } %>
+                                    
+                                </div>
+                            </div>
+                            <% }  %> 
+                            
+                    <% } else {%>
+                        <center><h1 style="color: red;"><strong>No book!!!</strong></h1></center>
+                    <% } %>
+                    
+                </div>
+                <!-- Blog List End -->
+                
+                
+                <!-- Subscribe Start -->
+                
+                <!-- Subscribe End -->
+                
+                
+                
+                
+                <!-- Footer Start -->
+                <div class="container py-4 bg-secondary text-center">
+                    <p class="m-0 text-white">
+                        &copy; <a class="text-white font-weight-bold" href="mains/#">Book overflow</a>. All Rights Reserved. Designed by Solutech
+                    </p>
+                </div>
+                <!-- Footer End -->
+            </div>
+        </div>
+        
+        <!-- Back to Top -->
+        <a href="mains/#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
+        
+        <!-- JavaScript Libraries -->
+        <script src="/mains/https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="/mains/https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="/mains/lib/easing/easing.min.js"></script>
+        <script src="/mains/lib/waypoints/waypoints.min.js"></script>
+
+        <!-- Contact Javascript File -->
+        <script src="/mains/mail/jqBootstrapValidation.min.js"></script>
+        <script src="/mains/mail/contact.js"></script>
+
+        <!-- Template Javascript -->
+        <script src="/mains/js/main.js"></script>
+        <script>
+            function move(pth) {
+                window.location.pathname=pth
+            }
+        </script>
+    </body>
 </html>
+
+
+
+
+
+
+
+
+

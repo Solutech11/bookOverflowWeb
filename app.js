@@ -10,7 +10,7 @@ const cors = require("cors")
 app.use(cors())
 
 //open
-const open = require('open');
+// const open = require('open');
 
 //node fetch
 const fetch = require('node-fetch')
@@ -34,31 +34,37 @@ app.use(fileupload({createParentPath:true}))
 
 
 //static file
-app.use(express.static(__dirname+'static'));
+app.use(express.static('static'));
 
 //view engine
 app.set('view engine','ejs' );
 
 //session
 const session = require('express-session');
-const { response } = require('express');
+// const { response } = require('express');
 // const { response } = require('express');
 // const { json } = require('express/lib/response');
 app.use(session({secret:'samoaJoe', saveUninitialized:true, resave:true}))
 
 
 //port
-const port = process.env.Port || 4000
+const port = process.env.PORT || 4000
+// const port = process.env.Port
 
-app.listen(port,()=>{
-    console.log("http://localhost:4000/");
+app.listen(port,(err)=>{
+    if (err) {
+        console.log(err);
+    }else{
+        
+    }
+    console.log("website running");
 })
 
 
 //apikey 
 const apikey = "samoaJoe"
 //website
-const website ='http://localhost:5000'
+const website ='https://book-overflow-api1234567890.herokuapp.com'
 
 
 //home page
@@ -98,7 +104,7 @@ app.post('/register', async(req,res)=>{
     const datas = req.body
     const sess = req.session
 
-    console.log(JSON.stringify(datas));
+    // console.log(JSON.stringify(datas));
     await fetch (website+"/addStudent/"+apikey,{
         method: 'POST',
         body:JSON.stringify(datas),
@@ -205,6 +211,7 @@ app.get('/logout',(req,res)=>{
 app.get('/verify', async(req,res)=>{
     const user = req.session.username
     const email = req.session.email
+    console.log(user);
 
     //user nd email
     if (user && email){
@@ -213,6 +220,7 @@ app.get('/verify', async(req,res)=>{
             headers:{"Content-type": "application/json; charset=UTF-8"}
         }).then(response=>response.json()).then((json)=>{
             const data =json;
+            console.log(data);
             if(data.access==true){
                 if (data.user==true){
                     if (data.pastverf==false) {
@@ -236,7 +244,7 @@ app.get('/verify', async(req,res)=>{
             }else{
                 res.redirect('/lost')
             }
-        })
+        }).catch(err=>console.log(err))
     }else{
         res.redirect('/lost')
     }    
