@@ -44,7 +44,7 @@ const session = require('express-session');
 // const { response } = require('express');
 // const { response } = require('express');
 // const { json } = require('express/lib/response');
-app.use(session({secret:'samoaJoe', saveUninitialized:true, resave:true}))
+app.use(session({secret:'*****', saveUninitialized:true, resave:true}))
 
 
 //port
@@ -62,9 +62,9 @@ app.listen(port,(err)=>{
 
 
 //apikey 
-const apikey = "samoaJoe"
+const apikey = "*****"
 //website
-const website ='https://book-overflow-api1234567890.herokuapp.com'
+const website ='*****'
 
 
 //home page
